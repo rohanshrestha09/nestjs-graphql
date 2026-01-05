@@ -1,0 +1,20 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Order {
+  id: ID!
+  status: String!
+}
+
+type Query {
+  findOrder(id: String!): Order
+}
+
+type Mutation {
+  confirmOrder(input: ConfirmOrderInput!): Boolean!
+}
+
+input ConfirmOrderInput {
+  orderId: ID!
+}
