@@ -1,14 +1,15 @@
-export class OrderStatus {
+import { BaseValueObject } from 'src/shared/domain/base.vo';
+import { z } from 'zod';
+
+export class OrderStatus extends BaseValueObject<string> {
   static readonly DRAFT = 'DRAFT';
   static readonly CONFIRMED = 'CONFIRMED';
 
-  constructor(public readonly value: 'DRAFT' | 'CONFIRMED') {
-    if (!value) {
-      throw new Error('OrderStatus cannot be empty');
-    }
+  constructor(value: string) {
+    super(value);
+  }
 
-    if (value !== OrderStatus.DRAFT && value !== OrderStatus.CONFIRMED) {
-      throw new Error('Invalid order status');
-    }
+  validate(value: string) {
+    return z.enum([OrderStatus.DRAFT, OrderStatus.CONFIRMED]).parse(value);
   }
 }

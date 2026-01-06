@@ -1,11 +1,23 @@
-export class OrderAmount {
-  constructor(public readonly value: number) {
-    if (value <= 0) {
-      throw new Error('OrderAmount must be greater than 0');
-    }
+import { BaseValueObject } from 'src/shared/domain/base.vo';
+import { z } from 'zod';
+
+export class OrderAmount extends BaseValueObject<number> {
+  constructor(value: number) {
+    super(value);
   }
 
-  toString(): string {
-    return this.value.toString();
+  validate(value: number) {
+    return z.number().nonnegative().parse(value);
+  }
+
+  toCents(): number {
+    return Math.round(this.value * 100);
+  }
+
+  format(currency: string): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+    }).format(this.value);
   }
 }

@@ -1,12 +1,18 @@
-import { Order } from 'src/orders/domain/entities/order.entity';
+import { UserSession } from '@thallesp/nestjs-better-auth';
 import { OrderRepositoryPort } from 'src/orders/application/ports/order-repository.port';
+import { Order } from 'src/orders/domain/entities/order.entity';
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
+import { UserId } from 'src/users/domain/value-objects/user-id.vo';
 
 export class FindOrderUseCase {
   constructor(private readonly orderRepository: OrderRepositoryPort) {}
 
-  async execute(rawOrderId: string): Promise<Order | null> {
+  async execute(
+    session: UserSession,
+    rawOrderId: string,
+  ): Promise<Order | null> {
     const orderId = new OrderId(rawOrderId);
-    return await this.orderRepository.findById(orderId);
+    const userId = new UserId(session.user.id);
+    return await this.orderRepository.findById(orderId).forUser(userId);
   }
 }

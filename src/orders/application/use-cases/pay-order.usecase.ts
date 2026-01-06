@@ -1,8 +1,10 @@
+import { UserSession } from '@thallesp/nestjs-better-auth';
 import { OrderNotificationServicePort } from 'src/orders/application/ports/order-notification-service.port';
 import { OrderPaymentServicePort } from 'src/orders/application/ports/order-payment-service.port';
 import { OrderRepositoryPort } from 'src/orders/application/ports/order-repository.port';
 import { OrderNotFoundException } from 'src/orders/domain/exceptions/order-not-found.exception';
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
+import { UserId } from 'src/users/domain/value-objects/user-id.vo';
 
 export class PayOrderUseCase {
   constructor(
@@ -11,10 +13,11 @@ export class PayOrderUseCase {
     private readonly orderNotificationService: OrderNotificationServicePort,
   ) {}
 
-  async execute(rawOrderId: string): Promise<void> {
+  async execute(session: UserSession, rawOrderId: string): Promise<void> {
     const orderId = new OrderId(rawOrderId);
+    const userId = new UserId(session.user.id);
 
-    const order = await this.orderRepository.findById(orderId);
+    const order = await this.orderRepository.findById(orderId).forUser(userId);
     if (!order) {
       throw new OrderNotFoundException(orderId.value);
     }

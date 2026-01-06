@@ -2,58 +2,38 @@ import { OrderAmount } from 'src/orders/domain/value-objects/order-amount.vo';
 import { OrderCurrency } from 'src/orders/domain/value-objects/order-currency.vo';
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
 import { OrderStatus } from 'src/orders/domain/value-objects/order-status.vo';
-import z from 'zod';
+import { BaseEntity, PropsToGetters } from 'src/shared/domain/base.entity';
+import { BaseValueObject } from 'src/shared/domain/base.vo';
+import { UserId } from 'src/users/domain/value-objects/user-id.vo';
+import { z } from 'zod';
 
-export class Order {
-  constructor(
-    private readonly _id: OrderId,
-    private readonly _amount: OrderAmount,
-    private readonly _currency: OrderCurrency,
-    private readonly _status: OrderStatus,
-  ) {}
+interface OrderProps extends Record<string, BaseValueObject<unknown>> {
+  id: OrderId;
+  userId: UserId;
+  amount: OrderAmount;
+  currency: OrderCurrency;
+  status: OrderStatus;
+}
 
-  get id() {
-    return this._id.value;
+export interface Order extends PropsToGetters<OrderProps> {}
+
+export class Order extends BaseEntity<OrderProps> {
+  private constructor(props: OrderProps) {
+    super(props);
   }
 
-  get amount() {
-    return this._amount.value;
+  static create(props: OrderProps) {
+    return new this(props);
   }
 
-  get currency() {
-    return this._currency.value;
-  }
-
-  get status() {
-    return this._status.value;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      status: this.status,
-      amount: this.amount,
-      currency: this.currency,
-    };
-  }
-
-  static validate(json: unknown) {
+  static fromJSON(json: Record<string, unknown>) {
     const schema = z.object({
-      id: z.string(),
-      amount: z.number(),
-      currency: z.string(),
-      status: z.enum(['DRAFT', 'CONFIRMED']),
+      id: z.custom<OrderId>((v: string) => new OrderId(v)),
+      userId: z.custom<UserId>((v: string) => new UserId(v)),
+      amount: z.custom<OrderAmount>((v: number) => new OrderAmount(v)),
+      currency: z.custom<OrderCurrency>((v: string) => new OrderCurrency(v)),
+      status: z.custom<OrderStatus>((v: string) => new OrderStatus(v)),
     });
-    return schema.parse(json);
-  }
-
-  static fromJSON(json: unknown) {
-    const result = this.validate(json);
-    return new Order(
-      new OrderId(result.id),
-      new OrderAmount(result.amount),
-      new OrderCurrency(result.currency),
-      new OrderStatus(result.status),
-    );
+    return this.create(schema.parse(json));
   }
 }

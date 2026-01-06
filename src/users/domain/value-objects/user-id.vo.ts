@@ -1,7 +1,7 @@
 import { BaseValueObject } from 'src/shared/domain/base.vo';
 import { z } from 'zod';
 
-export class OrderId extends BaseValueObject<string> {
+export class UserId extends BaseValueObject<string> {
   constructor(value: string) {
     super(value);
   }

@@ -1,42 +1,33 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Collection, Db, ObjectId } from 'mongodb';
+import { Collection, Db, Filter, ObjectId } from 'mongodb';
 import { OrderRepositoryPort } from 'src/orders/application/ports/order-repository.port';
 import { Order } from 'src/orders/domain/entities/order.entity';
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
+import { IRepositoryBaseQuery } from 'src/shared/application/base-repository.port';
 import { MONGODB_PROVIDER } from 'src/shared/infrastructure/database/mongodb.provider';
-
-type OrderDocument = {
-  _id: ObjectId;
-  amount: number;
-  currency: string;
-  status: 'DRAFT' | 'CONFIRMED';
-};
+import { UserId } from 'src/users/domain/value-objects/user-id.vo';
 
 @Injectable()
 export class MongoDBOrderRepository implements OrderRepositoryPort {
-  private collection: Collection<OrderDocument>;
+  private collection: Collection;
 
   constructor(@Inject(MONGODB_PROVIDER) private readonly db: Db) {
     this.collection = this.db.collection('orders');
   }
 
-  async findById(id: OrderId): Promise<Order | null> {
-    const doc = await this.collection.findOne({ _id: new ObjectId(id.value) });
+  findById(id: OrderId): IRepositoryBaseQuery<Order | null> {
+    const executeQuery = async (userId?: UserId) => {
+      const query: Filter<Document> = {
+        _id: new ObjectId(id.value),
+        ...(userId ? { userId: new ObjectId(userId.value) } : {}),
+      };
+      const doc = await this.collection.findOne(query);
+      return doc ? Order.fromJSON({ ...doc, id: doc._id.toString() }) : null;
+    };
 
-    if (!doc) return null;
-
-    return Order.fromJSON(doc);
-  }
-
-  async save(order: Order): Promise<void> {
-    await this.collection.updateOne(
-      { _id: new ObjectId(order.id) },
-      {
-        $set: {
-          status: order.status,
-        },
-      },
-      { upsert: true },
-    );
+    return {
+      forUser: (userId: UserId) => executeQuery(userId),
+      any: () => executeQuery(),
+    };
   }
 }
