@@ -4,19 +4,22 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { Configuration } from 'src/shared/infrastructure/config/configuration';
 
 export const RABBITMQ_PROVIDER = 'RABBITMQ_PROVIDER';
 
 export const rabbitmqProvider = {
   provide: RABBITMQ_PROVIDER,
-  useFactory: (configService: ConfigService): ClientProxy => {
+  useFactory: (configService: ConfigService<Configuration>): ClientProxy => {
     return ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
         urls: [
-          configService.getOrThrow<string>('RABBITMQ_URI', { infer: true }),
+          configService.getOrThrow<string>('messaging.rabbitmq.uri', {
+            infer: true,
+          }),
         ],
-        queue: configService.getOrThrow<string>('RABBITMQ_QUEUE', {
+        queue: configService.getOrThrow('messaging.rabbitmq.queue', {
           infer: true,
         }),
         queueOptions: {

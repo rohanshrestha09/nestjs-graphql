@@ -29,6 +29,7 @@
     "@nestjs/graphql": "^13.2.3",
     "@nestjs/microservices": "^11.1.11",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.4",
     "@nestjs/throttler": "^6.5.0",
     "@react-email/components": "1.0.3",
     "@sendgrid/mail": "^8.1.6",
