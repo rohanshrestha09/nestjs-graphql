@@ -8,9 +8,9 @@ import { Order } from 'src/orders/domain/entities/order.entity';
 
 @Injectable()
 export class StripeOrderPaymentService implements OrderPaymentServicePort {
-  constructor(private readonly configService: ConfigService) {}
-
   private readonly logger = new Logger(StripeOrderPaymentService.name);
+
+  constructor(private readonly configService: ConfigService) {}
 
   async charge(order: Order): Promise<OrderPaymentResult> {
     this.logger.log(

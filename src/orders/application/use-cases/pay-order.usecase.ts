@@ -1,3 +1,4 @@
+import { Injectable, Logger } from '@nestjs/common';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 import { OrderNotificationServicePort } from 'src/orders/application/ports/order-notification-service.port';
 import { OrderPaymentServicePort } from 'src/orders/application/ports/order-payment-service.port';
@@ -6,7 +7,10 @@ import { OrderNotFoundException } from 'src/orders/domain/exceptions/order-not-f
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
 import { UserId } from 'src/users/domain/value-objects/user-id.vo';
 
+@Injectable()
 export class PayOrderUseCase {
+  private readonly logger = new Logger(PayOrderUseCase.name);
+
   constructor(
     private readonly orderRepository: OrderRepositoryPort,
     private readonly orderPaymentService: OrderPaymentServicePort,

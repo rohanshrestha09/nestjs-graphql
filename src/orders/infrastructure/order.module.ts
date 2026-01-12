@@ -1,20 +1,8 @@
 import { Module } from '@nestjs/common';
-import {
-  ORDER_EVENT_PUBLISHER,
-  OrderEventPublisherPort,
-} from 'src/orders/application/ports/order-event-publisher.port';
-import {
-  ORDER_NOTIFICATION_SERVICE,
-  OrderNotificationServicePort,
-} from 'src/orders/application/ports/order-notification-service.port';
-import {
-  ORDER_PAYMENT_SERVICE,
-  OrderPaymentServicePort,
-} from 'src/orders/application/ports/order-payment-service.port';
-import {
-  ORDER_REPOSITORY,
-  OrderRepositoryPort,
-} from 'src/orders/application/ports/order-repository.port';
+import { OrderEventPublisherPort } from 'src/orders/application/ports/order-event-publisher.port';
+import { OrderNotificationServicePort } from 'src/orders/application/ports/order-notification-service.port';
+import { OrderPaymentServicePort } from 'src/orders/application/ports/order-payment-service.port';
+import { OrderRepositoryPort } from 'src/orders/application/ports/order-repository.port';
 import { ConfirmOrderUseCase } from 'src/orders/application/use-cases/confirm-order.usecase';
 import { FindOrderUseCase } from 'src/orders/application/use-cases/find-order.usecase';
 import { PayOrderUseCase } from 'src/orders/application/use-cases/pay-order.usecase';
@@ -31,54 +19,24 @@ import { OrderListener } from 'src/orders/interfaces/messaging/listeners/order.l
   providers: [
     OrderResolver,
     OrderListener,
+    ConfirmOrderUseCase,
+    FindOrderUseCase,
+    PayOrderUseCase,
     {
-      provide: ORDER_REPOSITORY,
+      provide: OrderRepositoryPort,
       useClass: MongoDBOrderRepository,
     },
     {
-      provide: ORDER_EVENT_PUBLISHER,
+      provide: OrderEventPublisherPort,
       useClass: RabbitMQOrderEventPublisher,
     },
     {
-      provide: ORDER_PAYMENT_SERVICE,
+      provide: OrderPaymentServicePort,
       useClass: StripeOrderPaymentService,
     },
     {
-      provide: ORDER_NOTIFICATION_SERVICE,
+      provide: OrderNotificationServicePort,
       useClass: SendgridOrderNotificationService,
-    },
-    // Use cases with injected ports
-    {
-      provide: ConfirmOrderUseCase,
-      useFactory: (
-        orderRepository: OrderRepositoryPort,
-        orderEventPublisher: OrderEventPublisherPort,
-      ) => new ConfirmOrderUseCase(orderRepository, orderEventPublisher),
-      inject: [ORDER_REPOSITORY, ORDER_EVENT_PUBLISHER],
-    },
-    {
-      provide: FindOrderUseCase,
-      useFactory: (orderRepository: OrderRepositoryPort) =>
-        new FindOrderUseCase(orderRepository),
-      inject: [ORDER_REPOSITORY],
-    },
-    {
-      provide: PayOrderUseCase,
-      useFactory: (
-        orderRepository: OrderRepositoryPort,
-        orderPaymentService: OrderPaymentServicePort,
-        orderNotificationService: OrderNotificationServicePort,
-      ) =>
-        new PayOrderUseCase(
-          orderRepository,
-          orderPaymentService,
-          orderNotificationService,
-        ),
-      inject: [
-        ORDER_REPOSITORY,
-        ORDER_PAYMENT_SERVICE,
-        ORDER_NOTIFICATION_SERVICE,
-      ],
     },
   ],
 })

@@ -1,7 +1,5 @@
 import { Order } from 'src/orders/domain/entities/order.entity';
 
-export const ORDER_PAYMENT_SERVICE = 'ORDER_PAYMENT_SERVICE';
-
 export interface OrderPaymentResult {
   transactionId: string;
   status: 'success' | 'failed' | 'pending';
@@ -9,10 +7,15 @@ export interface OrderPaymentResult {
   currency: string;
 }
 
-export interface OrderPaymentServicePort {
-  charge(order: Order): Promise<OrderPaymentResult>;
+export abstract class OrderPaymentServicePort {
+  abstract charge(order: Order): Promise<OrderPaymentResult>;
 
-  refund(transactionId: string, amount?: number): Promise<OrderPaymentResult>;
+  abstract refund(
+    transactionId: string,
+    amount?: number,
+  ): Promise<OrderPaymentResult>;
 
-  getTransaction(transactionId: string): Promise<OrderPaymentResult | null>;
+  abstract getTransaction(
+    transactionId: string,
+  ): Promise<OrderPaymentResult | null>;
 }

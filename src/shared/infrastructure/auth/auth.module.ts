@@ -4,7 +4,16 @@ import { auth } from './auth.config';
 
 @Global()
 @Module({
-  imports: [BetterAuthModule.forRoot({ auth })],
+  imports: [
+    BetterAuthModule.forRoot({
+      auth,
+      middleware: (req, _res, next) => {
+        req.url = req.originalUrl;
+        req.baseUrl = '';
+        next();
+      },
+    }),
+  ],
   exports: [BetterAuthModule],
 })
 export class AuthModule {}
