@@ -1,9 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Roles, Session, UserSession } from '@thallesp/nestjs-better-auth';
+import { Roles, Session } from '@thallesp/nestjs-better-auth';
 import { ConfirmOrderUseCase } from 'src/orders/application/use-cases/confirm-order.usecase';
 import { FindOrderUseCase } from 'src/orders/application/use-cases/find-order.usecase';
 import { ConfirmOrderInput } from 'src/orders/interfaces/graphql/inputs/order.input';
 import { OrderType } from 'src/orders/interfaces/graphql/types/order.type';
+import { UserSession } from 'src/shared/infrastructure/auth/auth.type';
 import { UserRole } from 'src/users/domain/value-objects/user-role.vo';
 
 @Resolver(() => OrderType)

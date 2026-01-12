@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserSession } from '@thallesp/nestjs-better-auth';
 import { OrderEventPublisherPort } from 'src/orders/application/ports/order-event-publisher.port';
 import { OrderRepositoryPort } from 'src/orders/application/ports/order-repository.port';
 import { OrderConfirmedEvent } from 'src/orders/domain/events/order-confirmed.event';
 import { OrderNotFoundException } from 'src/orders/domain/exceptions/order-not-found.exception';
 import { OrderId } from 'src/orders/domain/value-objects/order-id.vo';
+import { UserSession } from 'src/shared/infrastructure/auth/auth.type';
 import { UserId } from 'src/users/domain/value-objects/user-id.vo';
 
 @Injectable()

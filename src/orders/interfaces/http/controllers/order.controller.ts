@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, UsePipes } from '@nestjs/common';
-import { Roles, Session, UserSession } from '@thallesp/nestjs-better-auth';
+import { Roles, Session } from '@thallesp/nestjs-better-auth';
 import { ConfirmOrderUseCase } from 'src/orders/application/use-cases/confirm-order.usecase';
 import { FindOrderUseCase } from 'src/orders/application/use-cases/find-order.usecase';
 import { Order } from 'src/orders/domain/entities/order.entity';
@@ -7,6 +7,7 @@ import {
   confirmOrderRequestDto,
   ConfirmOrderRequestDto,
 } from 'src/orders/interfaces/http/dto/confirm-order.request';
+import { UserSession } from 'src/shared/infrastructure/auth/auth.type';
 import { ZodValidationPipe } from 'src/shared/infrastructure/pipes/zod-validation.pipe';
 import { UserRole } from 'src/users/domain/value-objects/user-role.vo';
 
